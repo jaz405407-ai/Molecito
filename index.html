@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Para ti ❤️</title>
+
+<!-- tipografía romántica -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  background:black;
+  overflow:hidden;
+  font-family: cursive;
+  text-align:center;
+  transition: background 1s;
+}
+
+h1{
+  color:red;
+  font-size:2.2rem;
+  margin:10px;
+  text-shadow:0 0 10px red;
+}
+
+img{
+  width:150px;
+  height:150px;
+  border-radius:15px;
+  object-fit:cover;
+  margin:10px;
+  box-shadow:0 0 15px red;
+}
+
+button{
+  border:none;
+  padding:12px 20px;
+  font-size:1rem;
+  border-radius:20px;
+  margin:10px;
+  cursor:pointer;
+  font-family: 'Pacifico', cursive;
+}
+
+.si{ background:red; color:white; }
+.no{ background:white; color:red; position:absolute; }
+
+/* corazones y flores */
+.flota{
+  position:absolute;
+  bottom:-10px;
+  font-size:20px;
+  animation: float 6s linear infinite;
+}
+
+@keyframes float{
+  from{ transform: translateY(0); }
+  to{ transform: translateY(-100vh); }
+}
+
+/* carta */
+.carta{
+  display:none;
+  position:fixed;
+  background:black;
+  color:red;
+  border:1px solid red;
+  padding:20px;
+  border-radius:15px;
+  width:80%;
+  max-width:300px;
+  box-shadow:0 0 15px red;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Bebecito, ¿quieres ser mi San Valentín? ❤️</h1>
+
+<img src=IMG20251224123609.jpg>
+
+<button class="si" onclick="acepto()">Sí 💖</button>
+<button class="no" onmouseover="huir(this)">No 💔</button>
+
+<div class="carta" id="carta">
+  Prometo acompañarte, hacerte reír  
+  y recordarte todos los días  
+  lo especial que eres para mí ❤️
+</div>
+
+<audio id="musica" src=musica.mp3></audio>
+
+<script>
+function huir(boton){
+  boton.style.top = Math.random()*80 + "vh";
+  boton.style.left = Math.random()*80 + "vw";
+}
+
+function acepto(){
+  document.getElementById("carta").style.display="block";
+  document.getElementById("musica").play();
+
+  // cambio de fondo romántico
+  document.body.style.background = "linear-gradient(45deg, #300000, #8b0000)";
+}
+
+/* corazones y flores flotando */
+setInterval(()=>{
+  let cosa = document.createElement("div");
+  cosa.className = "flota";
+  cosa.innerHTML = Math.random() > 0.5 ? "❤️" : "🌹";
+  cosa.style.left = Math.random()*100 + "vw";
+  cosa.style.fontSize = (Math.random()*20+10)+"px";
+  document.body.appendChild(cosa);
+
+  setTimeout(()=>{ cosa.remove(); },6000);
+},500);
+</script>
+
+</body>
+</html>
