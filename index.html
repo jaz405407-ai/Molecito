@@ -2,251 +2,192 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>BioGame 6A</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego de Preguntas</title>
 
 <style>
 body{
-margin:0;
-font-family:'Orbitron', sans-serif;
-color:white;
-text-align:center;
-overflow-x:hidden;
-background: linear-gradient(270deg,#0f2027,#203a43,#2c5364,#1a1a2e);
-background-size:800% 800%;
-animation:fondo 20s ease infinite;
+    font-family: 'Trebuchet MS', sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    text-align:center;
 }
 
-@keyframes fondo{
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
+h1{
+    margin-top:20px;
 }
 
-h1{font-size:50px;margin-top:40px;}
-h2{font-size:26px;}
+#pregunta{
+    margin:30px auto;
+    padding:20px;
+    width:80%;
+    border:3px solid #00f7ff;
+    border-radius:15px;
+    box-shadow:0 0 20px #00f7ff, 0 0 40px #00f7ff;
+    font-size:22px;
+    min-height:80px;
+}
 
 button{
-padding:12px 20px;
-margin:10px;
-font-size:15px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-background:#00f5d4;
-color:black;
-font-weight:bold;
-transition:0.3s;
-box-shadow:0 0 10px #00f5d4;
+    padding:12px 20px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
 }
 
-button:hover{
-transform:scale(1.1);
-box-shadow:0 0 20px #00f5d4,0 0 40px #00f5d4;
+.opcion{
+    background:#ffffff;
+    color:#000;
 }
 
-.card{
-background:rgba(0,0,0,0.75);
-padding:30px;
-border-radius:20px;
-width:75%;
-margin:auto;
-margin-top:30px;
-border:3px solid #00f5d4;
-box-shadow:0 0 20px #00f5d4,0 0 40px #00f5d4;
-animation:fade 0.5s ease-in-out;
+.opcion:hover{
+    background:#00f7ff;
 }
 
-@keyframes fade{
-from{opacity:0;transform:translateY(20px);}
-to{opacity:1;transform:translateY(0);}
+#resultado{
+    margin-top:20px;
+    font-size:18px;
+    min-height:40px;
 }
 
-.hidden{display:none;}
-
-#marcador{
-margin-top:15px;
-font-size:18px;
-color:#00f5d4;
+#puntajes{
+    margin-top:20px;
+    font-size:20px;
 }
 
-.timer{
-font-size:22px;
-margin-bottom:10px;
-color:#ffd166;
-}
-
-#mensaje{
-margin-top:20px;
-font-size:18px;
-min-height:40px;
-}
-
-input{
-padding:10px;
-border-radius:8px;
-border:none;
-margin:5px;
-}
-
-.trofeo{
-font-size:80px;
-animation:brillo 1.5s infinite alternate;
-}
-
-@keyframes brillo{
-from{transform:scale(1);}
-to{transform:scale(1.1);}
+#ganador{
+    font-size:28px;
+    margin-top:20px;
 }
 </style>
 </head>
-
 <body>
 
-<div id="inicio">
-<h1>BioGame 6A 🧬</h1>
-<h2>Equipo "Bio Estructurales 6A"</h2>
+<h1>🎮 Juego de Preguntas</h1>
 
-<input type="text" id="nombre1" placeholder="Nombre Equipo 1">
-<input type="text" id="nombre2" placeholder="Nombre Equipo 2">
-<br><br>
-<button onclick="mostrarReglas()">Comenzar</button>
+<div id="puntajes">
+Equipo A: <span id="puntosA">0</span> |
+Equipo B: <span id="puntosB">0</span>
 </div>
 
-<div id="reglas" class="hidden card">
-<h2>Reglas del juego</h2>
-<p>• 15 segundos por pregunta.</p>
-<p>• Respuesta correcta = 1 punto.</p>
-<p>• Error o tiempo agotado = cambia turno.</p>
-<p>• Gana quien tenga más puntos 🏆</p>
-<button onclick="iniciarJuego()">Iniciar Juego</button>
-</div>
+<div id="pregunta"></div>
 
-<div id="marcador" class="hidden"></div>
-
-<div id="juego" class="hidden card">
-<div class="timer" id="timer"></div>
-<h2 id="turno"></h2>
-<h3 id="pregunta"></h3>
 <div id="opciones"></div>
-<div id="mensaje"></div>
-</div>
 
-<div id="resultado" class="hidden card">
-<div class="trofeo">🏆</div>
-<h2 id="ganador"></h2>
-</div>
+<div id="resultado"></div>
+<div id="ganador"></div>
 
-<audio id="errorSound">
-<source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg">
+<!-- Música fondo -->
+<audio id="musicaFondo" loop>
+  <source src="musica-juego.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Música ganador -->
+<audio id="musicaGanador">
+  <source src="ganador.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 
-let equipoActual=1,puntos1=0,puntos2=0,indice=0,tiempo=15,intervalo;
-let nombreEquipo1="",nombreEquipo2="";
-
-const preguntas=[
-{texto:"¿Qué organelo produce ATP (energía celular)?",
-opciones:["Ribosoma","Mitocondria","Núcleo","Vacuola"],correcta:1},
-{texto:"¿Qué estructura distingue a la célula vegetal?",
-opciones:["Mitocondria","Pared celular","Lisosoma","Centriolo"],correcta:1},
-{texto:"¿Qué establece la teoría celular?",
-opciones:["Que todos los seres vivos están formados por células","Que surge espontáneamente","Solo animales tienen células","Los virus son células"],correcta:0},
-{texto:"¿Qué transporte NO requiere energía?",
-opciones:["Difusión","Endocitosis","Bomba sodio-potasio","Transporte activo"],correcta:0},
-{texto:"Orden correcto de organización biológica:",
-opciones:["Célula → Tejido → Órgano → Sistema","Sistema → Órgano → Tejido → Célula","Órgano → Sistema → Célula","Tejido → Sistema → Célula"],correcta:0},
-{texto:"¿Qué organelo contiene el ADN?",
-opciones:["Mitocondria","Núcleo","Ribosoma","Membrana"],correcta:1},
-{texto:"¿Qué permite el paso selectivo de sustancias?",
-opciones:["Pared celular","Membrana plasmática","Citoplasma","Cloroplasto"],correcta:1},
-{texto:"¿Quién propuso la teoría celular?",
-opciones:["Darwin","Schleiden y Schwann","Mendel","Watson"],correcta:1},
-{texto:"¿Unidad básica de la vida?",
-opciones:["Molécula","Tejido","Célula","Órgano"],correcta:2},
-{texto:"¿Organelo de la fotosíntesis?",
-opciones:["Cloroplasto","Mitocondria","Ribosoma","Golgi"],correcta:0}
+let preguntas = [
+{
+pregunta:"¿Qué es el sentido de la vida desde la filosofía?",
+opciones:["Un propósito personal","Solo sobrevivir","Ganar dinero","No existe"],
+correcta:0
+},
+{
+pregunta:"¿Qué filósofo habló del propósito individual?",
+opciones:["Platón","Aristóteles","Nietzsche","Sócrates"],
+correcta:2
+},
+{
+pregunta:"El sentido de la vida puede cambiar según:",
+opciones:["La cultura","La experiencia","La edad","Todas las anteriores"],
+correcta:3
+}
 ];
 
-function mostrarReglas(){
-nombreEquipo1=document.getElementById("nombre1").value||"Equipo 1";
-nombreEquipo2=document.getElementById("nombre2").value||"Equipo 2";
-inicio.classList.add("hidden");
-reglas.classList.remove("hidden");
-}
+let actual = 0;
+let turno = "A";
+let puntosA = 0;
+let puntosB = 0;
+
+const preguntaDiv = document.getElementById("pregunta");
+const opcionesDiv = document.getElementById("opciones");
+const resultadoDiv = document.getElementById("resultado");
+const ganadorDiv = document.getElementById("ganador");
+
+const musicaFondo = document.getElementById("musicaFondo");
+const musicaGanador = document.getElementById("musicaGanador");
 
 function iniciarJuego(){
-reglas.classList.add("hidden");
-juego.classList.remove("hidden");
-marcador.classList.remove("hidden");
-actualizarMarcador();
-cargarPregunta();
+    musicaFondo.volume = 0.3;
+    musicaFondo.play();
+    mostrarPregunta();
 }
 
-function actualizarMarcador(){
-marcador.innerText=nombreEquipo1+": "+puntos1+" | "+nombreEquipo2+": "+puntos2;
+function mostrarPregunta(){
+    resultadoDiv.innerHTML="";
+    let p = preguntas[actual];
+    preguntaDiv.innerHTML = p.pregunta;
+    opcionesDiv.innerHTML="";
+
+    p.opciones.forEach((op,index)=>{
+        let btn = document.createElement("button");
+        btn.className="opcion";
+        btn.innerText=op;
+        btn.onclick=()=>verificar(index);
+        opcionesDiv.appendChild(btn);
+    });
 }
 
-function cargarPregunta(){
-if(indice>=preguntas.length){terminarJuego();return;}
-tiempo=15;
-timer.innerText="⏳ Tiempo: "+tiempo;
-intervalo=setInterval(()=>{
-tiempo--;
-timer.innerText="⏳ Tiempo: "+tiempo;
-if(tiempo===0){clearInterval(intervalo);mostrarIncorrecto();}
-},1000);
+function verificar(index){
+    let correcta = preguntas[actual].correcta;
 
-let p=preguntas[indice];
-turno.innerText="Turno: "+(equipoActual===1?nombreEquipo1:nombreEquipo2);
-pregunta.innerText=p.texto;
-opciones.innerHTML="";
-mensaje.innerHTML="";
-
-p.opciones.forEach((op,i)=>{
-opciones.innerHTML+=`<button onclick="verificar(${i})">${op}</button>`;
-});
+    if(index === correcta){
+        resultadoDiv.innerHTML="✅ Correcto!";
+        if(turno==="A"){ puntosA++; turno="B"; }
+        else{ puntosB++; turno="A"; }
+        actualizarPuntajes();
+        setTimeout(siguientePregunta,1500);
+    }else{
+        resultadoDiv.innerHTML="❌ Incorrecto<br>Respuesta correcta: "+preguntas[actual].opciones[correcta];
+        turno = turno==="A"?"B":"A";
+        setTimeout(siguientePregunta,4000); // más tiempo para leer
+    }
 }
 
-function verificar(r){
-clearInterval(intervalo);
-if(r===preguntas[indice].correcta){
-if(equipoActual===1)puntos1++;else puntos2++;
-mensaje.innerHTML="✅ ¡Correcto!";
-mensaje.style.color="#00ffae";
-actualizarMarcador();
-setTimeout(cambiarTurno,2000);
-}else{
-errorSound.play();
-mostrarIncorrecto();
-}
+function actualizarPuntajes(){
+    document.getElementById("puntosA").innerText=puntosA;
+    document.getElementById("puntosB").innerText=puntosB;
 }
 
-function mostrarIncorrecto(){
-mensaje.innerHTML="❌ Incorrecto. Respuesta correcta: <b>"+preguntas[indice].opciones[preguntas[indice].correcta]+"</b>";
-mensaje.style.color="#ff6b6b";
-setTimeout(cambiarTurno,4000);
+function siguientePregunta(){
+    actual++;
+    if(actual < preguntas.length){
+        mostrarPregunta();
+    }else{
+        finalizarJuego();
+    }
 }
 
-function cambiarTurno(){
-equipoActual=equipoActual===1?2:1;
-indice++;
-cargarPregunta();
+function finalizarJuego(){
+    musicaFondo.pause();
+    musicaGanador.volume=0.6;
+    musicaGanador.play();
+
+    if(puntosA > puntosB){
+        ganadorDiv.innerHTML="🏆 ¡Ganó el Equipo A! 🏆";
+    }else if(puntosB > puntosA){
+        ganadorDiv.innerHTML="🏆 ¡Ganó el Equipo B! 🏆";
+    }else{
+        ganadorDiv.innerHTML="🤝 ¡Empate!";
+    }
 }
 
-function terminarJuego(){
-juego.classList.add("hidden");
-resultado.classList.remove("hidden");
-
-let texto="";
-if(puntos1>puntos2)texto="Ganador: "+nombreEquipo1;
-else if(puntos2>puntos1)texto="Ganador: "+nombreEquipo2;
-else texto="Empate 🤝";
-
-ganador.innerText=texto+" | Puntaje final: "+nombreEquipo1+" "+puntos1+" - "+nombreEquipo2+" "+puntos2;
-}
+iniciarJuego();
 
 </script>
 
