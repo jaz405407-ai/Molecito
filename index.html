@@ -2,126 +2,252 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Para ti ❤️</title>
+<title>BioGame 6A</title>
 
-<!-- tipografía romántica -->
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  background:black;
-  overflow:hidden;
-  font-family: cursive;
-  text-align:center;
-  transition: background 1s;
+margin:0;
+font-family:'Orbitron', sans-serif;
+color:white;
+text-align:center;
+overflow-x:hidden;
+background: linear-gradient(270deg,#0f2027,#203a43,#2c5364,#1a1a2e);
+background-size:800% 800%;
+animation:fondo 20s ease infinite;
 }
 
-h1{
-  color:red;
-  font-size:2.2rem;
-  margin:10px;
-  text-shadow:0 0 10px red;
+@keyframes fondo{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
 }
 
-img{
-  width:150px;
-  height:150px;
-  border-radius:15px;
-  object-fit:cover;
-  margin:10px;
-  box-shadow:0 0 15px red;
-}
+h1{font-size:50px;margin-top:40px;}
+h2{font-size:26px;}
 
 button{
-  border:none;
-  padding:12px 20px;
-  font-size:1rem;
-  border-radius:20px;
-  margin:10px;
-  cursor:pointer;
-  font-family: 'Pacifico', cursive;
+padding:12px 20px;
+margin:10px;
+font-size:15px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+background:#00f5d4;
+color:black;
+font-weight:bold;
+transition:0.3s;
+box-shadow:0 0 10px #00f5d4;
 }
 
-.si{ background:red; color:white; }
-.no{ background:white; color:red; position:absolute; }
-
-/* corazones y flores */
-.flota{
-  position:absolute;
-  bottom:-10px;
-  font-size:20px;
-  animation: float 6s linear infinite;
+button:hover{
+transform:scale(1.1);
+box-shadow:0 0 20px #00f5d4,0 0 40px #00f5d4;
 }
 
-@keyframes float{
-  from{ transform: translateY(0); }
-  to{ transform: translateY(-100vh); }
+.card{
+background:rgba(0,0,0,0.75);
+padding:30px;
+border-radius:20px;
+width:75%;
+margin:auto;
+margin-top:30px;
+border:3px solid #00f5d4;
+box-shadow:0 0 20px #00f5d4,0 0 40px #00f5d4;
+animation:fade 0.5s ease-in-out;
 }
 
-/* carta */
-.carta{
-  display:none;
-  position:fixed;
-  background:black;
-  color:red;
-  border:1px solid red;
-  padding:20px;
-  border-radius:15px;
-  width:80%;
-  max-width:300px;
-  box-shadow:0 0 15px red;
+@keyframes fade{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.hidden{display:none;}
+
+#marcador{
+margin-top:15px;
+font-size:18px;
+color:#00f5d4;
+}
+
+.timer{
+font-size:22px;
+margin-bottom:10px;
+color:#ffd166;
+}
+
+#mensaje{
+margin-top:20px;
+font-size:18px;
+min-height:40px;
+}
+
+input{
+padding:10px;
+border-radius:8px;
+border:none;
+margin:5px;
+}
+
+.trofeo{
+font-size:80px;
+animation:brillo 1.5s infinite alternate;
+}
+
+@keyframes brillo{
+from{transform:scale(1);}
+to{transform:scale(1.1);}
 }
 </style>
 </head>
 
 <body>
 
-<h1>Bebecito, ¿quieres ser mi San Valentín? ❤️</h1>
+<div id="inicio">
+<h1>BioGame 6A 🧬</h1>
+<h2>Equipo "Bio Estructurales 6A"</h2>
 
-<img src=IMG20251224123609.jpg>
-
-<button class="si" onclick="acepto()">Sí 💖</button>
-<button class="no" onmouseover="huir(this)">No 💔</button>
-
-<div class="carta" id="carta">
-  Prometo acompañarte, hacerte reír  
-  y recordarte todos los días  
-  lo especial que eres para mí ❤️
+<input type="text" id="nombre1" placeholder="Nombre Equipo 1">
+<input type="text" id="nombre2" placeholder="Nombre Equipo 2">
+<br><br>
+<button onclick="mostrarReglas()">Comenzar</button>
 </div>
 
-<audio id="musica" src=musica.mp3></audio>
+<div id="reglas" class="hidden card">
+<h2>Reglas del juego</h2>
+<p>• 15 segundos por pregunta.</p>
+<p>• Respuesta correcta = 1 punto.</p>
+<p>• Error o tiempo agotado = cambia turno.</p>
+<p>• Gana quien tenga más puntos 🏆</p>
+<button onclick="iniciarJuego()">Iniciar Juego</button>
+</div>
+
+<div id="marcador" class="hidden"></div>
+
+<div id="juego" class="hidden card">
+<div class="timer" id="timer"></div>
+<h2 id="turno"></h2>
+<h3 id="pregunta"></h3>
+<div id="opciones"></div>
+<div id="mensaje"></div>
+</div>
+
+<div id="resultado" class="hidden card">
+<div class="trofeo">🏆</div>
+<h2 id="ganador"></h2>
+</div>
+
+<audio id="errorSound">
+<source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg">
+</audio>
 
 <script>
-function huir(boton){
-  boton.style.top = Math.random()*80 + "vh";
-  boton.style.left = Math.random()*80 + "vw";
+
+let equipoActual=1,puntos1=0,puntos2=0,indice=0,tiempo=15,intervalo;
+let nombreEquipo1="",nombreEquipo2="";
+
+const preguntas=[
+{texto:"¿Qué organelo produce ATP (energía celular)?",
+opciones:["Ribosoma","Mitocondria","Núcleo","Vacuola"],correcta:1},
+{texto:"¿Qué estructura distingue a la célula vegetal?",
+opciones:["Mitocondria","Pared celular","Lisosoma","Centriolo"],correcta:1},
+{texto:"¿Qué establece la teoría celular?",
+opciones:["Que todos los seres vivos están formados por células","Que surge espontáneamente","Solo animales tienen células","Los virus son células"],correcta:0},
+{texto:"¿Qué transporte NO requiere energía?",
+opciones:["Difusión","Endocitosis","Bomba sodio-potasio","Transporte activo"],correcta:0},
+{texto:"Orden correcto de organización biológica:",
+opciones:["Célula → Tejido → Órgano → Sistema","Sistema → Órgano → Tejido → Célula","Órgano → Sistema → Célula","Tejido → Sistema → Célula"],correcta:0},
+{texto:"¿Qué organelo contiene el ADN?",
+opciones:["Mitocondria","Núcleo","Ribosoma","Membrana"],correcta:1},
+{texto:"¿Qué permite el paso selectivo de sustancias?",
+opciones:["Pared celular","Membrana plasmática","Citoplasma","Cloroplasto"],correcta:1},
+{texto:"¿Quién propuso la teoría celular?",
+opciones:["Darwin","Schleiden y Schwann","Mendel","Watson"],correcta:1},
+{texto:"¿Unidad básica de la vida?",
+opciones:["Molécula","Tejido","Célula","Órgano"],correcta:2},
+{texto:"¿Organelo de la fotosíntesis?",
+opciones:["Cloroplasto","Mitocondria","Ribosoma","Golgi"],correcta:0}
+];
+
+function mostrarReglas(){
+nombreEquipo1=document.getElementById("nombre1").value||"Equipo 1";
+nombreEquipo2=document.getElementById("nombre2").value||"Equipo 2";
+inicio.classList.add("hidden");
+reglas.classList.remove("hidden");
 }
 
-function acepto(){
-  document.getElementById("carta").style.display="block";
-  document.getElementById("musica").play();
-
-  // cambio de fondo romántico
-  document.body.style.background = "linear-gradient(45deg, #300000, #8b0000)";
+function iniciarJuego(){
+reglas.classList.add("hidden");
+juego.classList.remove("hidden");
+marcador.classList.remove("hidden");
+actualizarMarcador();
+cargarPregunta();
 }
 
-/* corazones y flores flotando */
-setInterval(()=>{
-  let cosa = document.createElement("div");
-  cosa.className = "flota";
-  cosa.innerHTML = Math.random() > 0.5 ? "❤️" : "🌹";
-  cosa.style.left = Math.random()*100 + "vw";
-  cosa.style.fontSize = (Math.random()*20+10)+"px";
-  document.body.appendChild(cosa);
+function actualizarMarcador(){
+marcador.innerText=nombreEquipo1+": "+puntos1+" | "+nombreEquipo2+": "+puntos2;
+}
 
-  setTimeout(()=>{ cosa.remove(); },6000);
-},500);
+function cargarPregunta(){
+if(indice>=preguntas.length){terminarJuego();return;}
+tiempo=15;
+timer.innerText="⏳ Tiempo: "+tiempo;
+intervalo=setInterval(()=>{
+tiempo--;
+timer.innerText="⏳ Tiempo: "+tiempo;
+if(tiempo===0){clearInterval(intervalo);mostrarIncorrecto();}
+},1000);
+
+let p=preguntas[indice];
+turno.innerText="Turno: "+(equipoActual===1?nombreEquipo1:nombreEquipo2);
+pregunta.innerText=p.texto;
+opciones.innerHTML="";
+mensaje.innerHTML="";
+
+p.opciones.forEach((op,i)=>{
+opciones.innerHTML+=`<button onclick="verificar(${i})">${op}</button>`;
+});
+}
+
+function verificar(r){
+clearInterval(intervalo);
+if(r===preguntas[indice].correcta){
+if(equipoActual===1)puntos1++;else puntos2++;
+mensaje.innerHTML="✅ ¡Correcto!";
+mensaje.style.color="#00ffae";
+actualizarMarcador();
+setTimeout(cambiarTurno,2000);
+}else{
+errorSound.play();
+mostrarIncorrecto();
+}
+}
+
+function mostrarIncorrecto(){
+mensaje.innerHTML="❌ Incorrecto. Respuesta correcta: <b>"+preguntas[indice].opciones[preguntas[indice].correcta]+"</b>";
+mensaje.style.color="#ff6b6b";
+setTimeout(cambiarTurno,4000);
+}
+
+function cambiarTurno(){
+equipoActual=equipoActual===1?2:1;
+indice++;
+cargarPregunta();
+}
+
+function terminarJuego(){
+juego.classList.add("hidden");
+resultado.classList.remove("hidden");
+
+let texto="";
+if(puntos1>puntos2)texto="Ganador: "+nombreEquipo1;
+else if(puntos2>puntos1)texto="Ganador: "+nombreEquipo2;
+else texto="Empate 🤝";
+
+ganador.innerText=texto+" | Puntaje final: "+nombreEquipo1+" "+puntos1+" - "+nombreEquipo2+" "+puntos2;
+}
+
 </script>
 
 </body>
